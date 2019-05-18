@@ -2,11 +2,15 @@ module Main where
 
 import Prelude
 
+import Data.Maybe (Maybe(..))
 import Effect (Effect)
+import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
+import Halogen as H
 import Halogen.Aff (awaitBody, runHalogenAff, selectElement)
 import Halogen.VDom.Driver (runUI)
-import SoundCloud.Component.Root (root)
+import SoundCloud.App (runApp)
+import SoundCloud.Component.Root as Root
 import SoundCloud.Data.LogLevel as LogLevel
 import SoundCloud.Env (mkEnv)
 import Web.DOM.ParentNode (QuerySelector(..))
@@ -17,5 +21,7 @@ main = runHalogenAff do
   head ← selectElement $ QuerySelector "head"
   let logLevel = LogLevel.Dev
   env ← liftEffect $ mkEnv logLevel
-  io ← runUI root unit body
+  let root ∷ Root.Component' Aff
+      root = H.hoist (runApp env) Root.component
+  io ← runUI root Nothing body
   pure unit
