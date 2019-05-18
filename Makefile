@@ -17,9 +17,9 @@ clean:
 	npm run clean
 
 repln:
-	npm run repln
+	npm run repl:node
 
 replb:
-	npm run replb
+	npm run repl:browser
 
 .PHONY: run build compile test reset clean repln replb

@@ -3,6 +3,7 @@ module SoundCloud.Capability.Logging
   , Message
   , class Logging
   , logMessage
+  , consoleLogger
   , log
   , logDebug
   , logInfo
