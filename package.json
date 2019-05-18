@@ -1,4 +1,28 @@
 {
   "scripts": {
+    "postinstall": "spago install",
+    "compile": "spago build",
+    "test": "spago test",
+
+    "reset": "run-p reset:cache reset:spago",
+    "reset:cache": "rm -rf .cache",
+    "reset:spago": "rm -rf .spago",
+
+    "clean": "run-p clean:output clean:dist",
+    "clean:output": "rm -rf output/*",
+    "clean:dist": "rm -rf dist/*",
+
+    "repl:node": "spago repl",
+    "repl:browser": "spago repl --port 3200",
+
+    "start": "parcel app.html --no-autoinstall",
+    "build": "parcel build app.html"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "parcel-bundler": "^1.12.3"
+  },
+  "dependencies": {
+    "normalize.css": "^8.0.1"
   }
 }

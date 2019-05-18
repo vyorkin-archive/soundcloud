@@ -116,6 +116,45 @@ let upstream =
 
 let overrides = {=}
 
-let additions = {=}
+let additions =
+      { unicode-prelude =
+          mkPackage
+          [ "prelude" ]
+          "https://github.com/vyorkin/purescript-unicode-prelude.git"
+          "v0.2.4"
+      , uri =
+          mkPackage
+          [ "arrays"
+          , "generics-rep"
+          , "globals"
+          , "integers"
+          , "parsing"
+          , "profunctor-lenses"
+          , "unfoldable"
+          , "these"
+          ]
+          "https://github.com/slamdata/purescript-uri.git"
+          "v7.0.0"
+      , logging =
+          mkPackage
+          [ "prelude"
+          , "contravariant"
+          , "console"
+          , "effect"
+          , "transformers"
+          , "tuples"
+          , "either"
+          ]
+          "https://github.com/rightfold/purescript-logging.git"
+          "v3.0.0"
+      , generics-rep-optics =
+          mkPackage
+          [ "generics-rep"
+          , "profunctor-lenses"
+          , "typelevel-prelude"
+          ]
+          "https://github.com/LiamGoodacre/purescript-generics-rep-optics.git"
+          "v1.1.0"
+      }
 
 in  upstream // overrides // additions
