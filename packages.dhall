@@ -114,7 +114,9 @@ let mkPackage =
 let upstream =
       https://raw.githubusercontent.com/purescript/package-sets/psc-0.12.3-20190330/src/packages.dhall sha256:cb0cdde5926cfdff5bd17bb2508a85b5eee794088f253f59f884766828ba722c
 
-let overrides = {=}
+let overrides =
+      { css = upstream.css // { repo = "https://github.com/vyorkin-forks/purescript-css.git", version = "master" }
+      }
 
 let additions =
       { unicode-prelude =

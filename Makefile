@@ -22,4 +22,10 @@ repln:
 replb:
 	npm run repl:browser
 
-.PHONY: run build compile test reset clean repln replb
+css:
+	npm run css:generate
+
+deps:
+	npm install
+
+.PHONY: run build compile test reset clean repln replb deps

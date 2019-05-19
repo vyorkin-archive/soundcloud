@@ -2,6 +2,7 @@
 /node_modules/
 /.pulp-cache/
 /output/
+/styles/
 /dist/
 /generated-docs/
 /.psc-package/
@@ -10,3 +11,4 @@
 /.psa*
 /.spago
 /.cache
+generate-css.js

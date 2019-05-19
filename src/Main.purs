@@ -21,7 +21,10 @@ main = runHalogenAff do
   head ← selectElement $ QuerySelector "head"
   let logLevel = LogLevel.Dev
   env ← liftEffect $ mkEnv logLevel
+
   let root ∷ Root.Component' Aff
       root = H.hoist (runApp env) Root.component
+
   io ← runUI root Nothing body
+
   pure unit
