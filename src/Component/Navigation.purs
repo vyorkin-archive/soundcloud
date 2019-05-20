@@ -10,12 +10,15 @@ module SoundCloud.Component.Navigation
 
 import Prelude
 
+import Data.Monoid (guard)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
+import Prelude.Unicode ((≡))
 import SoundCloud.Capability.Navigation (class Navigation, navigate)
 import SoundCloud.Component.Navigation.Style (classNames, stylesheet)
 import SoundCloud.Data.Route (Route)
+import SoundCloud.Data.Route as Route
 import SoundCloud.HTML.Util (css)
 
 type Options =
@@ -58,5 +61,26 @@ navigation { title } = H.component
   render state =
     HH.nav
     [ css [classNames.root] ]
-    [
+    [ HH.a
+      [ css [classNames.title]
+      , HE.onClick (HE.input_ $ Navigate Route.Home)
+      ]
+      [ HH.text title ]
+    , HH.ul
+      [ css [classNames.menu]]
+      $ renderItem <$> navRoutes
     ]
+    where
+      renderItem route =
+        let classes = [classNames.menuItem] <> guard (route ≡ state.route) [classNames.menuItemActive]
+        in HH.li
+           [ css classes
+           , HE.onClick (HE.input_ $ Navigate route)
+           ]
+           [HH.text $ Route.toTitle route]
+
+navRoutes ∷ Array Route
+navRoutes =
+  [ Route.Home
+  , Route.About
+  ]

@@ -11,6 +11,7 @@ import Effect.Aff (Aff, launchAff_)
 import Effect.Aff.Class (class MonadAff)
 import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Now as Now
+import Foreign (unsafeToForeign)
 import Prelude.Unicode ((∘))
 import SoundCloud.Capability.Logging (Severity(..)) as Severity
 import SoundCloud.Capability.Logging (class Logging, Message, Severity, consoleLogger)
@@ -64,5 +65,7 @@ instance loggingApp ∷ Logging App where
       important = [Severity.Warning, Severity.Error]
 
 instance navigationApp ∷ Navigation App where
-  navigate route = pure unit
+  navigate route = do
+    { pushState } ← asks _.location
+    liftEffect $ pushState (unsafeToForeign {}) (Route.print route)
   logout = pure unit

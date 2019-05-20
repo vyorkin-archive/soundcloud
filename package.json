@@ -22,7 +22,7 @@
     "parcel:build": "parcel build app.html",
     "parcel:serve": "parcel app.html --no-autoinstall",
 
-    "start": "run-s compile css parcel:serve",
+    "start": "run-s parcel:serve",
     "build": "run-s clean:dist css compile parcel:build"
   },
   "devDependencies": {
