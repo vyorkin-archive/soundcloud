@@ -11,5 +11,13 @@ let
 in with ps;
   pkgs.stdenv.mkDerivation {
     name = "easy-purescript";
-    buildInputs = [ purs spago ];
+    buildInputs = [
+      purs
+      spago
+      pkgs.jq
+      pkgs.nodejs
+    ];
+    shellHook = ''
+      export PATH="$PWD/node_modules/.bin/:$PATH"
+    '';
   }

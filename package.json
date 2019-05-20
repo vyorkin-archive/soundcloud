@@ -3,19 +3,27 @@
     "postinstall": "spago install",
     "compile": "spago build",
     "test": "spago test",
+
     "reset": "run-p reset:cache reset:spago",
     "reset:cache": "rm -rf .cache",
     "reset:spago": "rm -rf .spago",
+
     "clean": "run-p clean:output clean:dist",
     "clean:output": "rm -rf output/*",
     "clean:dist": "rm -rf dist/*",
+
     "repl:node": "spago repl",
     "repl:browser": "spago repl --port 3200",
-    "css:generate": "purs bundle './output/*/*.js' -m SoundCloud.Tool.StylesheetGenerator --main SoundCloud.Tool.StylesheetGenerator -o generate-css.js && node generate-css.js",
+
+    "css": "run-s css:*",
+    "css:make": "spago bundle --main SoundCloud.Tool.StylesheetGenerator --to scripts/generate-css.js",
+    "css:run": "node scripts/generate-css.js",
+
     "parcel:build": "parcel build app.html",
     "parcel:serve": "parcel app.html --no-autoinstall",
-    "start": "run-s compile css:generate parcel:serve",
-    "build": "run-s clean:dist css:generate compile parcel:build"
+
+    "start": "run-s compile css parcel:serve",
+    "build": "run-s clean:dist css compile parcel:build"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5",

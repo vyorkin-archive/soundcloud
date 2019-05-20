@@ -14,9 +14,11 @@ import Effect.Now as Now
 import Prelude.Unicode ((∘))
 import SoundCloud.Capability.Logging (Severity(..)) as Severity
 import SoundCloud.Capability.Logging (class Logging, Message, Severity, consoleLogger)
+import SoundCloud.Capability.Navigation (class Navigation, logout, navigate)
 import SoundCloud.Capability.Now (class Now)
 import SoundCloud.Data.LogLevel (LogLevel)
 import SoundCloud.Data.LogLevel as LogLevel
+import SoundCloud.Data.Route as Route
 import SoundCloud.Env (Env)
 import Type.Prelude (class TypeEquals)
 import Type.Prelude (from) as Type
@@ -60,3 +62,7 @@ instance loggingApp ∷ Logging App where
 
       important ∷ Array Severity
       important = [Severity.Warning, Severity.Error]
+
+instance navigationApp ∷ Navigation App where
+  navigate route = pure unit
+  logout = pure unit

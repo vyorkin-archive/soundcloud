@@ -13,6 +13,7 @@ import Effect.Class (liftEffect)
 import Effect.Console (error, log)
 import Node.Encoding (Encoding(..))
 import Node.FS.Aff (writeTextFile)
+import Node.Path as Path
 import Prelude.Unicode ((∘))
 import SoundCloud.Style as App
 import Text.Prettier (Parser(..), defaultOptions)
@@ -33,10 +34,10 @@ process (Tuple name sheets) =
       liftEffect $ error "error generating stylesheet"
     Just css → do
       let formatted = foldMap formatCSS css
+      fileName ← liftEffect $ Path.resolve ["styles", name <> ".css"] "."
       writeTextFile UTF8 fileName formatted
       liftEffect ∘ log $ "generated stylesheet " <> fileName
   where
-    fileName = "./styles/" <> name <> ".css"
     rendered = traverse renderedSheet sheets
 
 formatCSS ∷ String → String

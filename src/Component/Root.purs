@@ -1,20 +1,33 @@
-module SoundCloud.Component.Root where
+module SoundCloud.Component.Root
+  ( Routing
+  , State
+  , Query(..)
+  , Input
+  , Output
+  , Component'
+  , component
+  , module SoundCloud.Component.Root.Style
+  ) where
 
 import Prelude
 
 import Control.Monad.Reader (class MonadAsk)
+import Data.Const (Const)
 import Data.Either.Nested (type (\/))
 import Data.Functor.Coproduct.Nested (type (<\/>))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Effect.Aff.Class (class MonadAff)
 import Halogen as H
+import Halogen.Component.ChildPath as CP
 import Halogen.HTML as HH
 import Prelude.Unicode ((≢))
 import SoundCloud.Capability.Logging (class Logging)
 import SoundCloud.Capability.Now (class Now)
+import SoundCloud.Component.Root.Style (classNames, stylesheet)
 import SoundCloud.Data.Route (Route)
 import SoundCloud.Data.Route as Route
 import SoundCloud.Env (Env)
+import SoundCloud.HTML.Util (css)
 import SoundCloud.Page.About as About
 import SoundCloud.Page.Home as Home
 
@@ -39,10 +52,12 @@ type Output = Void
 type ChildQuery
   = Home.Query
   <\/> About.Query
+  <\/> Const Void
 
 type ChildSlot
   = Home.Slot
   \/ About.Slot
+  \/ Void
 
 type WithCapabilities c m
   = MonadAff m
@@ -87,5 +102,16 @@ component = H.lifecycleParentComponent
 
   render ∷ State → HTML m
   render state =
-    HH.div_
-    [ HH.text "root component" ]
+    HH.div
+      [ css [classNames.root] ]
+      -- [ navigation { title: "SoundCloud" }
+      [ HH.div
+        [ css [classNames.content] ]
+        [ renderPage state.route.current
+        ]
+      ]
+
+  renderPage ∷ Route → HTML m
+  renderPage = case _ of
+    Route.Home  → HH.slot' CP.cp1 Home.Slot Home.page unit absurd
+    Route.About → HH.slot' CP.cp2 About.Slot About.page unit absurd

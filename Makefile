@@ -23,7 +23,7 @@ replb:
 	npm run repl:browser
 
 css:
-	npm run css:generate
+	npm run css
 
 deps:
 	npm install
