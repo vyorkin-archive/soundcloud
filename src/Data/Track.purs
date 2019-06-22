@@ -1,6 +1,8 @@
 module SoundCloud.Data.Track
   ( TrackId
   , Track
+  , Track'
+  , decoder
   , _id
   , _playbacks
   , _favoritings
@@ -13,13 +15,16 @@ import Data.Lens (Lens')
 import Data.Lens.Record (prop)
 import Type.Prelude (SProxy(..))
 
--- playback_count
--- favoritings_count
--- comment_count
--- permalink_url
--- artwork_url
-
 type TrackId = Int
+
+type Track' =
+  { id ∷ TrackId
+  , playback_count ∷ Int
+  , favoritings_count ∷ Int
+  , comment_count ∷ Int
+  , permalink_url ∷ String
+  , artwork_url ∷ String
+  }
 
 type Track =
   { id ∷ TrackId
@@ -28,6 +33,16 @@ type Track =
   , comments ∷ Int
   , permalinkUrl ∷ String
   , artworkUrl ∷ String
+  }
+
+decoder ∷ Track' → Track
+decoder t =
+  { id: t.id
+  , playbacks: t.playback_count
+  , favoritings: t.favoritings_count
+  , comments: t.comment_count
+  , permalinkUrl: t.permalink_url
+  , artworkUrl: t.artwork_url
   }
 
 _id ∷ Lens' Track TrackId

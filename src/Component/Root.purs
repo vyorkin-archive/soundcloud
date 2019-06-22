@@ -24,6 +24,7 @@ import Prelude.Unicode ((≢))
 import SoundCloud.Capability.Logging (class Logging)
 import SoundCloud.Capability.Navigation (class Navigation)
 import SoundCloud.Capability.Now (class Now)
+import SoundCloud.Capability.Resource.Track (class TrackGateway)
 import SoundCloud.Component.Navigation (navigation)
 import SoundCloud.Component.Root.Style (classNames, stylesheet)
 import SoundCloud.Component.Util (OpaqueSlot)
@@ -63,6 +64,7 @@ type WithCapabilities c m
   ⇒ Now m
   ⇒ Logging m
   ⇒ Navigation m
+  ⇒ TrackGateway m
   ⇒ c m
 
 type Component' m = H.Component HH.HTML Query Input Output m
@@ -122,5 +124,5 @@ component = H.mkComponent
 
   renderPage ∷ Route → HTML m
   renderPage = case _ of
-    Route.Home  → HH.slot (SProxy ∷ _ "home") unit Home.page unit absurd
-    Route.About → HH.slot (SProxy ∷ _ "about") unit About.page unit absurd
+    Route.Home  → HH.slot (SProxy ∷ _ "home") unit Home.component unit absurd
+    Route.About → HH.slot (SProxy ∷ _ "about") unit About.component unit absurd

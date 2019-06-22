@@ -2,7 +2,7 @@ module SoundCloud.Page.About
   ( Component
   , HTML
   , Action
-  , page
+  , component
   ) where
 
 import Prelude
@@ -22,8 +22,8 @@ type WithCapabilities c m
   ⇒ MonadAff m
   ⇒ c m
 
-page ∷ ∀ m. WithCapabilities Component m
-page = H.mkComponent
+component ∷ ∀ m. WithCapabilities Component m
+component = H.mkComponent
   { initialState: const unit
   , render
   , eval: H.mkEval H.defaultEval

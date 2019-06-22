@@ -1,5 +1,6 @@
 module SoundCloud.API.Util
-  ( decode
+  ( decodeWith
+  , decode
   ) where
 
 import Prelude
@@ -10,6 +11,9 @@ import SoundCloud.API.Response (Response)
 import SoundCloud.Capability.Logging (class Logging, logError)
 
 decode ∷ ∀ a m. Logging m ⇒ Response a → m (Maybe a)
-decode = case _ of
+decode = decodeWith identity
+
+decodeWith ∷ ∀ a b m. Logging m ⇒ (a → b) → Response a → m (Maybe b)
+decodeWith f = case _ of
   Left err → logError (show err) *> pure Nothing
-  Right xs → pure $ Just xs
+  Right x → pure $ Just $ f x

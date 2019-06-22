@@ -13,8 +13,9 @@ import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Now as Now
 import Foreign (unsafeToForeign)
 import Prelude.Unicode ((∘))
-import SoundCloud.API (Endpoint(..), Verb(..), ajax, decode)
+import SoundCloud.API (Endpoint(..), Verb(..), ajax)
 import SoundCloud.API.Data (identify, paginate)
+import SoundCloud.API.Util (decodeWith)
 import SoundCloud.Capability.Logging (Severity(..)) as Severity
 import SoundCloud.Capability.Logging (class Logging, Message, Severity, consoleLogger)
 import SoundCloud.Capability.Navigation (class Navigation)
@@ -23,6 +24,7 @@ import SoundCloud.Capability.Resource.Track (class TrackGateway)
 import SoundCloud.Data.LogLevel (LogLevel)
 import SoundCloud.Data.LogLevel as LogLevel
 import SoundCloud.Data.Route as Route
+import SoundCloud.Data.Track as Track
 import SoundCloud.Env (Env)
 import Type.Prelude (class TypeEquals)
 import Type.Prelude (from) as Type
@@ -77,4 +79,5 @@ instance trackGatewayApp ∷ TrackGateway App where
   getTracks query page = do
     { clientId, pageSize } ← asks _.config
     let args = identify clientId ∘ paginate page pageSize $ query
-    ajax Get (Tracks args) >>= decode
+    raw ← ajax Get (Tracks args)
+    decodeWith (map Track.decoder) raw
