@@ -1,5 +1,6 @@
 module SoundCloud.Data.User
-  ( User
+  ( UserId
+  , User
   , _id
   , _name
   , _followings
@@ -20,8 +21,10 @@ import Type.Prelude (SProxy(..))
 -- username
 -- permalink_url
 
+type UserId = Int
+
 type User =
-  { id ∷ Int
+  { id ∷ UserId
   , name ∷ String
   , followings ∷ Int
   , followers ∷ Int
@@ -32,7 +35,7 @@ type User =
 
 -- Lenses
 
-_id ∷ Lens' User Int
+_id ∷ Lens' User UserId
 _id = prop (SProxy ∷ SProxy "id")
 
 _name ∷ Lens' User String

@@ -13,10 +13,13 @@ import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Now as Now
 import Foreign (unsafeToForeign)
 import Prelude.Unicode ((∘))
+import SoundCloud.API (Endpoint(..), Verb(..), ajax, decode)
+import SoundCloud.API.Data (identify, paginate)
 import SoundCloud.Capability.Logging (Severity(..)) as Severity
 import SoundCloud.Capability.Logging (class Logging, Message, Severity, consoleLogger)
-import SoundCloud.Capability.Navigation (class Navigation, logout, navigate)
+import SoundCloud.Capability.Navigation (class Navigation)
 import SoundCloud.Capability.Now (class Now)
+import SoundCloud.Capability.Resource.Track (class TrackGateway)
 import SoundCloud.Data.LogLevel (LogLevel)
 import SoundCloud.Data.LogLevel as LogLevel
 import SoundCloud.Data.Route as Route
@@ -40,7 +43,7 @@ derive newtype instance monadApp ∷ Monad App
 derive newtype instance monadEffectApp ∷ MonadEffect App
 derive newtype instance monadAffApp ∷ MonadAff App
 
-instance monadAskApp ∷ TypeEquals e Env ⇒ MonadAsk e App where
+instance monadAskEnvApp ∷ TypeEquals e Env ⇒ MonadAsk e App where
   ask = App $ asks Type.from
 
 instance nowApp ∷ Now App where
@@ -69,3 +72,9 @@ instance navigationApp ∷ Navigation App where
     { pushState } ← asks _.location
     liftEffect $ pushState (unsafeToForeign {}) (Route.print route)
   logout = pure unit
+
+instance trackGatewayApp ∷ TrackGateway App where
+  getTracks query page = do
+    { clientId, pageSize } ← asks _.config
+    let args = identify clientId ∘ paginate page pageSize $ query
+    ajax Get (Tracks args) >>= decode

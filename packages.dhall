@@ -109,13 +109,19 @@ let additions =
 -}
 
 let mkPackage =
-      https://raw.githubusercontent.com/purescript/package-sets/psc-0.12.3-20190330/src/mkPackage.dhall sha256:0b197efa1d397ace6eb46b243ff2d73a3da5638d8d0ac8473e8e4a8fc528cf57
+      https://raw.githubusercontent.com/purescript/package-sets/psc-0.13.0-20190611/src/mkPackage.dhall sha256:0b197efa1d397ace6eb46b243ff2d73a3da5638d8d0ac8473e8e4a8fc528cf57
 
 let upstream =
-      https://raw.githubusercontent.com/purescript/package-sets/psc-0.12.3-20190330/src/packages.dhall sha256:cb0cdde5926cfdff5bd17bb2508a85b5eee794088f253f59f884766828ba722c
+      https://raw.githubusercontent.com/purescript/package-sets/psc-0.13.0-20190611/src/packages.dhall sha256:2631fe1dce429e5f27324e59cc834e8e8832a5d533423952105c7446320a3648
 
 let overrides =
-      { css = upstream.css // { repo = "https://github.com/vyorkin-forks/purescript-css.git", version = "master" }
+      { css =
+              upstream.css
+          //  { repo =
+                  "https://github.com/vyorkin-forks/purescript-css.git"
+              , version =
+                  "master"
+              }
       }
 
 let additions =
@@ -124,19 +130,11 @@ let additions =
           [ "prelude" ]
           "https://github.com/vyorkin/purescript-unicode-prelude.git"
           "v0.2.4"
-      , uri =
+      , soundcloud =
           mkPackage
-          [ "arrays"
-          , "generics-rep"
-          , "globals"
-          , "integers"
-          , "parsing"
-          , "profunctor-lenses"
-          , "unfoldable"
-          , "these"
-          ]
-          "https://github.com/slamdata/purescript-uri.git"
-          "v7.0.0"
+          [ "prelude", "unicode-prelude", "options", "foreign", "aff-promise" ]
+          "https://github.com/vyorkin/purescript-soundcloud.git"
+          "v0.1.5"
       , logging =
           mkPackage
           [ "prelude"
@@ -151,10 +149,7 @@ let additions =
           "v3.0.0"
       , generics-rep-optics =
           mkPackage
-          [ "generics-rep"
-          , "profunctor-lenses"
-          , "typelevel-prelude"
-          ]
+          [ "generics-rep", "profunctor-lenses", "typelevel-prelude" ]
           "https://github.com/LiamGoodacre/purescript-generics-rep-optics.git"
           "v1.1.0"
       }

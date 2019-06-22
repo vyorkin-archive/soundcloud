@@ -3,25 +3,19 @@
     "postinstall": "spago install",
     "compile": "spago build",
     "test": "spago test",
-
     "reset": "run-p reset:cache reset:spago",
     "reset:cache": "rm -rf .cache",
     "reset:spago": "rm -rf .spago",
-
     "clean": "run-p clean:output clean:dist",
     "clean:output": "rm -rf output/*",
     "clean:dist": "rm -rf dist/*",
-
     "repl:node": "spago repl",
-    "repl:browser": "spago repl --port 3200",
-
+    "repl:browser": "spago repl -- --port 3200",
     "css": "run-s css:*",
-    "css:make": "spago bundle --main SoundCloud.Tool.StylesheetGenerator --to scripts/generate-css.js",
+    "css:make": "spago bundle-app --main SoundCloud.Tool.StylesheetGenerator --to scripts/generate-css.js",
     "css:run": "node scripts/generate-css.js",
-
     "parcel:build": "parcel build app.html",
     "parcel:serve": "parcel app.html --no-autoinstall",
-
     "start": "run-s parcel:serve",
     "build": "run-s clean:dist css compile parcel:build"
   },
@@ -32,6 +26,7 @@
   },
   "dependencies": {
     "normalize.css": "^8.0.1",
+    "soundcloud": "^3.3.2",
     "text-encoding": "^0.7.0"
   }
 }

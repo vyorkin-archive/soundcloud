@@ -19,7 +19,9 @@ class Monad m <= Now m where
   nowTime ∷ m Time
   nowDateTime ∷ m DateTime
 
-instance nowHalogenM ∷ Now m ⇒ Now (HalogenM s f g p o m) where
+instance nowHalogenM
+  ∷ Now m
+  ⇒ Now (HalogenM state action slots output m) where
   now = lift now
   nowDate = lift nowDate
   nowTime = lift nowTime

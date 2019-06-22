@@ -17,6 +17,6 @@ class Monad m <= Navigation m where
 
 instance navigationHalogenM
   ∷ Navigation m
-  ⇒ Navigation (HalogenM s f g p o m) where
+  ⇒ Navigation (HalogenM state action slots output m) where
   navigate = lift ∘ navigate
   logout = lift logout

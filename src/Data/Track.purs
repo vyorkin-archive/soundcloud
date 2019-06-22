@@ -1,5 +1,6 @@
 module SoundCloud.Data.Track
-  ( Track
+  ( TrackId
+  , Track
   , _id
   , _playbacks
   , _favoritings
@@ -18,8 +19,10 @@ import Type.Prelude (SProxy(..))
 -- permalink_url
 -- artwork_url
 
+type TrackId = Int
+
 type Track =
-  { id ∷ Int
+  { id ∷ TrackId
   , playbacks ∷ Int
   , favoritings ∷ Int
   , comments ∷ Int
@@ -27,7 +30,7 @@ type Track =
   , artworkUrl ∷ String
   }
 
-_id ∷ Lens' Track Int
+_id ∷ Lens' Track TrackId
 _id = prop (SProxy ∷ SProxy "id")
 
 _playbacks ∷ Lens' Track Int

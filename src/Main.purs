@@ -44,4 +44,4 @@ runRouter io = void ∘ Routing.matchesWith Route.parse (navigate io)
 
 navigate ∷ Root.IO → Maybe Route → Route → Effect Unit
 navigate io old new = when (old ≢ Just new) $
-  launchAff_ $ io.query (Root.Navigate new unit)
+  launchAff_ $ io.query (H.tell $ Root.Navigate new)

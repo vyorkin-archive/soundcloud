@@ -1,20 +1,21 @@
 module SoundCloud.Component.Navigation
   ( Options
-  , Query(..)
+  , Component
+  , HTML
   , Input
-  , Output
-  , Slot(..)
+  , Action
   , navigation
   , module SoundCloud.Component.Navigation.Style
   ) where
 
 import Prelude
 
+import Data.Maybe (Maybe(..))
 import Data.Monoid (guard)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
-import Prelude.Unicode ((≡))
+import Prelude.Unicode ((∘), (≡))
 import SoundCloud.Capability.Navigation (class Navigation, navigate)
 import SoundCloud.Component.Navigation.Style (classNames, stylesheet)
 import SoundCloud.Data.Route (Route)
@@ -25,59 +26,64 @@ type Options =
   { title ∷ String
   }
 
-data Query a
-  = Navigate Route a
-  | HandleInput Input a
+data Action
+  = Initialize
+  | Receive Input
+  | Navigate Route
 
 type Input =
   { route ∷ Route
   }
 
-type Output = Void
 type State = Input
 
-data Slot = Slot
-derive instance eqSlot ∷ Eq Slot
-derive instance ordSlot ∷ Ord Slot
+type Component m = ∀ q. H.Component HH.HTML q Input Void m
+type HTML m = H.ComponentHTML Action () m
 
-type Component = H.Component HH.HTML Query Input Output
-type DSL = H.ComponentDSL State Query Output
-type HTML = H.ComponentHTML Query
+type ActionHandler m = Action → H.HalogenM State Action () Void m Unit
 
-navigation ∷ ∀ m . Navigation m ⇒ Options → Component m
-navigation { title } = H.component
+navigation ∷ ∀ m. Navigation m ⇒ Options → Component m
+navigation { title } = H.mkComponent
   { initialState: identity
   , render
-  , eval
-  , receiver: HE.input HandleInput
+  , eval: H.mkEval $ H.defaultEval
+    { handleAction = handleAction
+    , initialize = Just Initialize
+    , receive = Just ∘ Receive
+    }
   }
   where
-  eval ∷ Query ~> DSL m
-  eval = case _ of
-    HandleInput input a → H.put input $> a
-    Navigate route a → navigate route $> a
-
-  render ∷ State → HTML
+  render ∷ State → HTML m
   render state =
     HH.nav
     [ css [classNames.root] ]
     [ HH.a
       [ css [classNames.title]
-      , HE.onClick (HE.input_ $ Navigate Route.Home)
+      , HE.onClick \_ → Just $ Navigate Route.Home
       ]
       [ HH.text title ]
     , HH.ul
-      [ css [classNames.menu]]
-      $ renderItem <$> navRoutes
+      [ css [classNames.menu] ]
+      ( renderItem <$> navRoutes )
     ]
     where
-      renderItem route =
-        let classes = [classNames.menuItem] <> guard (route ≡ state.route) [classNames.menuItemActive]
-        in HH.li
-           [ css classes
-           , HE.onClick (HE.input_ $ Navigate route)
-           ]
-           [HH.text $ Route.toTitle route]
+    renderItem ∷ Route → HTML m
+    renderItem route =
+      let cls = guard (route ≡ state.route) [classNames.menuItemActive]
+      in HH.li
+         [ css $ [classNames.menuItem] <> cls
+         , HE.onClick \_ → Just $ Navigate route
+         ]
+         [ HH.text $ Route.toTitle route ]
+
+  handleAction ∷ ActionHandler m
+  handleAction = case _ of
+    Initialize →
+      pure unit
+    Receive { route } →
+      H.modify_ _ { route = route }
+    Navigate route →
+      navigate route
 
 navRoutes ∷ Array Route
 navRoutes =

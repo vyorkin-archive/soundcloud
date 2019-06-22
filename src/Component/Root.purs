@@ -3,6 +3,7 @@ module SoundCloud.Component.Root
   , Routing
   , State
   , Query(..)
+  , Action(..)
   , Input
   , Output
   , Component'
@@ -13,29 +14,26 @@ module SoundCloud.Component.Root
 import Prelude
 
 import Control.Monad.Reader (class MonadAsk)
-import Data.Const (Const)
-import Data.Either.Nested (type (\/))
-import Data.Functor.Coproduct.Nested (type (<\/>))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Effect.Aff (Aff)
 import Effect.Aff.Class (class MonadAff)
 import Halogen (HalogenIO)
 import Halogen as H
-import Halogen.Component.ChildPath as CP
 import Halogen.HTML as HH
 import Prelude.Unicode ((≢))
 import SoundCloud.Capability.Logging (class Logging)
 import SoundCloud.Capability.Navigation (class Navigation)
 import SoundCloud.Capability.Now (class Now)
 import SoundCloud.Component.Navigation (navigation)
-import SoundCloud.Component.Navigation as Navigation
 import SoundCloud.Component.Root.Style (classNames, stylesheet)
+import SoundCloud.Component.Util (OpaqueSlot)
 import SoundCloud.Data.Route (Route)
 import SoundCloud.Data.Route as Route
 import SoundCloud.Env (Env)
 import SoundCloud.HTML.Util (css)
 import SoundCloud.Page.About as About
 import SoundCloud.Page.Home as Home
+import Type.Prelude (SProxy(..))
 
 type IO = HalogenIO Query Output Aff
 
@@ -48,26 +46,16 @@ type State =
   { route ∷ Routing
   }
 
-data Query a
-  = Initialize a
-  | Finalize a
-  | Navigate Route a
-
+data Query a = Navigate Route a
+data Action = Initialize
 type Input = Maybe Route
-
 type Output = Void
 
-type ChildQuery
-  = Home.Query
-  <\/> About.Query
-  <\/> Navigation.Query
-  <\/> Const Void
-
-type ChildSlot
-  = Home.Slot
-  \/ About.Slot
-  \/ Navigation.Slot
-  \/ Void
+type ChildSlots =
+  ( home ∷ OpaqueSlot Unit
+  , about ∷ OpaqueSlot Unit
+  , navigation ∷ OpaqueSlot Unit
+  )
 
 type WithCapabilities c m
   = MonadAff m
@@ -79,18 +67,20 @@ type WithCapabilities c m
 
 type Component' m = H.Component HH.HTML Query Input Output m
 type Component  m = WithCapabilities Component' m
+type HTML m = H.ComponentHTML Action ChildSlots m
 
-type DSL m  = H.ParentDSL State Query ChildQuery ChildSlot Output m
-type HTML m = H.ParentHTML Query ChildQuery ChildSlot m
+type QueryHandler m = ∀ a. Query a → H.HalogenM State Action ChildSlots Void m (Maybe a)
+type ActionHandler m = Action → H.HalogenM State Action ChildSlots Void m Unit
 
 component ∷ ∀ m. Component m
-component = H.lifecycleParentComponent
+component = H.mkComponent
   { initialState
   , render
-  , eval
-  , receiver: const Nothing
-  , initializer: Just $ H.action Initialize
-  , finalizer: Just $ H.action Finalize
+  , eval: H.mkEval $ H.defaultEval
+    { handleAction = handleAction
+    , handleQuery = handleQuery
+    , initialize = Just Initialize
+    }
   }
   where
   initialState ∷ Input → State
@@ -100,35 +90,37 @@ component = H.lifecycleParentComponent
              }
     }
 
-  eval ∷ Query ~> DSL m
-  eval = case _ of
-    Initialize a → pure a
-    Finalize a → pure a
+  handleAction ∷ ActionHandler m
+  handleAction = case _ of
+    Initialize → do
+      pure unit
+
+  handleQuery ∷ QueryHandler m
+  handleQuery = case _ of
     Navigate next a → do
       { current, previous } ← H.gets _.route
       when (current ≢ next) do
         let route = { current: next, previous: Just current }
         H.modify_ _ { route = route }
-      pure a
+      pure $ Just a
 
   render ∷ State → HTML m
   render state =
     HH.div
-      [ css [classNames.root] ]
-      [ renderNavigation state.route.current
-      , HH.div
-        [ css [classNames.content] ]
-        [ renderPage state.route.current
-        ]
+    [ css [classNames.root] ]
+    [ renderNavigation state.route.current
+    , HH.div
+      [ css [classNames.content] ]
+      [ renderPage state.route.current
       ]
+    ]
 
   renderNavigation ∷ Route → HTML m
-  renderNavigation route =
-    HH.slot' CP.cp3 Navigation.Slot
+  renderNavigation route = HH.slot (SProxy ∷ _ "navigation") unit
       (navigation { title: "SoundCloud" })
       { route } absurd
 
   renderPage ∷ Route → HTML m
   renderPage = case _ of
-    Route.Home  → HH.slot' CP.cp1 Home.Slot Home.page unit absurd
-    Route.About → HH.slot' CP.cp2 About.Slot About.page unit absurd
+    Route.Home  → HH.slot (SProxy ∷ _ "home") unit Home.page unit absurd
+    Route.About → HH.slot (SProxy ∷ _ "about") unit About.page unit absurd

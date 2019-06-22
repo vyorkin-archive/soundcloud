@@ -2,7 +2,9 @@
 Welcome to a Spago project!
 You can edit this file as you like.
 -}
-{ name =
+{ sources =
+    [ "src/**/*.purs", "test/**/*.purs" ]
+, name =
     "soundcloud"
 , dependencies =
     [ "aff"
@@ -12,6 +14,7 @@ You can edit this file as you like.
     , "datetime"
     , "effect"
     , "either"
+    , "exists"
     , "foreign"
     , "foreign-generic"
     , "foreign-object"
@@ -32,6 +35,7 @@ You can edit this file as you like.
     , "routing"
     , "routing-duplex"
     , "simple-json"
+    , "soundcloud"
     , "prettier"
     , "node-fs"
     , "node-fs-aff"

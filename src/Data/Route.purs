@@ -42,5 +42,5 @@ print = Route.print codec
 
 toTitle ∷ Route → String
 toTitle = case _ of
-  Home → "Home"
+  Home  → "Home"
   About → "About"

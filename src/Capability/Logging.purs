@@ -51,7 +51,7 @@ class Now m <= Logging m where
 
 instance loggingHalogenM
   ∷ Logging m
-  ⇒ Logging (HalogenM s f g p o m) where
+  ⇒ Logging (HalogenM state action slots output m) where
   logMessage = lift ∘ logMessage
 
 mkMessage ∷ ∀ m. Now m ⇒ Severity → String → m Message
