@@ -78,6 +78,6 @@ instance navigationApp ∷ Navigation App where
 instance trackGatewayApp ∷ TrackGateway App where
   getTracks query page = do
     { clientId, pageSize } ← asks _.config
-    let args = identify clientId ∘ paginate page pageSize $ query
-    raw ← ajax Get (Tracks args)
+    let mkArgs = identify clientId ∘ paginate page pageSize
+    raw ← ajax Get (Tracks $ mkArgs query)
     decodeWith (map Track.decoder) raw

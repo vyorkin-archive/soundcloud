@@ -6,6 +6,7 @@ module SoundCloud.Page.Home
   , State
   , Action
   , component
+  , module SoundCloud.Page.Home.Style
   ) where
 
 import Prelude
@@ -19,8 +20,12 @@ import Network.RemoteData (RemoteData(..))
 import Network.RemoteData as RemoteData
 import SoundCloud.API.Endpoint.Track (Genre)
 import SoundCloud.Capability.Resource.Track (class TrackGateway, getTracks)
-import SoundCloud.Data.Track (Track)
+import SoundCloud.Component.HTML (trackList)
+import SoundCloud.Component.HTML.Track (TrackActions)
+import SoundCloud.Data.Track (Track, TrackId)
 import SoundCloud.Env (Env)
+import SoundCloud.HTML.Util (css)
+import SoundCloud.Page.Home.Style (classNames, stylesheet)
 
 type State =
   { genres ∷ Array Genre
@@ -31,6 +36,9 @@ type State =
 data Action
   = Initialize
   | LoadTracks
+  | Play TrackId
+  | Comment TrackId
+  | Enqueue TrackId
 
 type Component' m = ∀ q. H.Component HH.HTML q Unit Void m
 type Component  m = WithCapabilities Component' m
@@ -69,23 +77,23 @@ component = H.mkComponent
       H.modify_ _ { tracks = Loading }
       tracks ← getTracks { genres: Just genres } page
       H.modify_ _ { tracks = RemoteData.fromMaybe tracks }
+    Play id → do
+      pure unit
+    Comment id → do
+      pure unit
+    Enqueue id → do
+      pure unit
+
+  trackActions ∷ TrackActions Action
+  trackActions =
+    { play: Play
+    , comment: Comment
+    , enqueue: Enqueue
+    }
 
   render ∷ State → HTML m
-  render { tracks } = renderTracks tracks
-
-  renderTracks ∷ ∀ props. RemoteData String (Array Track) → HH.HTML props Action
-  renderTracks = case _ of
-    NotAsked →
-      HH.div_ [ HH.text "Not loaded" ]
-    Loading →
-      HH.div_ [ HH.text "Loading" ]
-    Failure err →
-      HH.div_ [ HH.text $ "Loading failed: " <> err ]
-    Success tracks →
-      HH.div_ $ tracks <#> renderTrack
-
-  renderTrack ∷ ∀ props. Track → HH.HTML props Action
-  renderTrack t =
-    HH.div_
-    [ HH.text $ show t.id
+  render { tracks } =
+    HH.div
+    [ css [classNames.root]
     ]
+    [ trackList trackActions tracks ]

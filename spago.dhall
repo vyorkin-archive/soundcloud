@@ -26,6 +26,7 @@ You can edit this file as you like.
     , "nonempty"
     , "now"
     , "prelude"
+    , "ordered-collections"
     , "profunctor-lenses"
     , "psci-support"
     , "quickcheck"

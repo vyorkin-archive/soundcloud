@@ -3,13 +3,17 @@ module SoundCloud.Page.About
   , HTML
   , Action
   , component
+  , module SoundCloud.Page.About.Style
   ) where
 
 import Prelude
+
 import Effect.Aff.Class (class MonadAff)
 import Effect.Class (class MonadEffect)
 import Halogen as H
 import Halogen.HTML as HH
+import SoundCloud.HTML.Util (css)
+import SoundCloud.Page.About.Style (classNames, stylesheet)
 
 type State = Unit
 type Action = Unit
@@ -30,4 +34,7 @@ component = H.mkComponent
   }
 
 render ∷ ∀ m. State → HTML m
-render _ = HH.div_ [ HH.text "about" ]
+render _ =
+  HH.div
+  [ css [classNames.root] ]
+  [ HH.text "about" ]
